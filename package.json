@@ -7,7 +7,7 @@
     "prepublish": "npm ls && npm run unit",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
-    "unit": "set -e; for t in test*.js; do node $t; done"
+    "unit": "set -e; for t in test/*.js; do node $t; done"
   },
   "keywords": [
     "queue",
