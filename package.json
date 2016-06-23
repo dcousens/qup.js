@@ -1,0 +1,26 @@
+{
+  "name": "sue",
+  "version": "1.0.0",
+  "description": "Async stack-based concurrent queue with batch support",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "npm ls && npm run unit",
+    "lint": "standard",
+    "test": "npm run lint && npm run unit",
+    "unit": "set -e; for t in test*.js; do node $t; done"
+  },
+  "keywords": [
+    "queue",
+    "stack",
+    "cargo",
+    "payload",
+    "batch",
+    "concurrent",
+    "async"
+  ],
+  "author": "Daniel Cousens",
+  "license": "ISC",
+  "devDependencies": {
+    "tape": "^4.6.0"
+  }
+}
