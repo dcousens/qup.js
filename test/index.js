@@ -1,5 +1,5 @@
 let test = require('tape')
-let sue = require('../')
+let qup = require('../')
 
 test('runs, with N concurrent', (t) => {
   t.plan(12)
@@ -11,7 +11,7 @@ test('runs, with N concurrent', (t) => {
     setTimeout(callback)
   }
 
-  let su = sue(add, 2)
+  let su = qup(add, 2)
 
   su.push(2)
   t.equal(accum, 2) // 2 was added
@@ -46,7 +46,7 @@ test('runs in batches, with N concurrent', (t) => {
     setTimeout(callback)
   }
 
-  let su = sue(addBatch, 2, 2)
+  let su = qup(addBatch, 2, 2)
 
   su.push(2)
   t.equal(accum, 2) // 2 was added
