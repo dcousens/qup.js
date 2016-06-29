@@ -54,4 +54,6 @@ Sue.prototype.pop = function suePop () {
   return this.q.pop()
 }
 
-module.exports = Sue
+module.exports = function sue (f, concurrent, batch) {
+  return new Sue(f, concurrent, batch)
+}
