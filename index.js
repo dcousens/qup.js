@@ -6,7 +6,7 @@ function Sue (f, concurrent, batch) {
   this.batch = batch || null
 }
 
-Sue.prototype._run = function qrun () {
+Sue.prototype._run = function sueRun () {
   if (this.running >= this.concurrent) return
   if (!this.q.length) return
 
@@ -21,7 +21,7 @@ Sue.prototype._run = function qrun () {
   })
 }
 
-Sue.prototype._runBatch = function qrun () {
+Sue.prototype._runBatch = function sueRunBatch () {
   if (this.running >= this.concurrent) return
   if (!this.q.length) return
 
@@ -44,13 +44,13 @@ Sue.prototype._runBatch = function qrun () {
   })
 }
 
-Sue.prototype.push = function qpush (p, callback) {
+Sue.prototype.push = function suePush (p, callback) {
   this.q.push({ p, callback })
 
   if (this.running < this.concurrent) return this.batch === null ? this._run() : this._runBatch()
 }
 
-Sue.prototype.pop = function qpop () {
+Sue.prototype.pop = function suePop () {
   return this.q.pop()
 }
 
