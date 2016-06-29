@@ -10,13 +10,14 @@ Qup.prototype._run = function qupRun () {
   if (this.running >= this.concurrent) return
   if (!this.q.length) return
 
+  var self = this
   var { p, callback } = this.q.pop()
 
   this.running += 1
-  this.f(p, (err) => {
-    this.running -= 1
+  this.f(p, function (err) {
+    self.running -= 1
 
-    setTimeout(() => this._run())
+    setTimeout(function () { self._run() })
     if (callback) callback(err)
   })
 }
@@ -35,11 +36,13 @@ Qup.prototype._runBatch = function qupRunBatch () {
     if (callback) callbacks.push(callback)
   }
 
+  var self = this
+
   this.running += 1
   this.f(ps, (err) => {
-    this.running -= 1
+    self.running -= 1
 
-    setTimeout(() => this._runBatch())
+    setTimeout(function () { self._runBatch() })
     callbacks.forEach(callback => callback(err))
   })
 }

@@ -1,17 +1,17 @@
-let test = require('tape')
-let qup = require('../')
+var test = require('tape')
+var qup = require('../')
 
 test('runs, with N concurrent', (t) => {
   t.plan(12)
 
-  let accum = 0
+  var accum = 0
 
   function add (x, callback) {
     accum += x
     setTimeout(callback)
   }
 
-  let su = qup(add, 2)
+  var su = qup(add, 2)
 
   su.push(2)
   t.equal(accum, 2) // 2 was added
@@ -37,7 +37,7 @@ test('runs, with N concurrent', (t) => {
 test('runs in batches, with N concurrent', (t) => {
   t.plan(20)
 
-  let accum = 0
+  var accum = 0
 
   function addBatch (xs, callback) {
     t.ok(xs.length <= 2)
@@ -46,7 +46,7 @@ test('runs in batches, with N concurrent', (t) => {
     setTimeout(callback)
   }
 
-  let su = qup(addBatch, 2, 2)
+  var su = qup(addBatch, 2, 2)
 
   su.push(2)
   t.equal(accum, 2) // 2 was added

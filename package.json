@@ -21,6 +21,7 @@
   "author": "Daniel Cousens",
   "license": "ISC",
   "devDependencies": {
+    "standard": "*",
     "tape": "^4.6.0"
   }
 }
