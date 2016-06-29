@@ -1,6 +1,6 @@
 {
   "name": "qup",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Async stack-based concurrent queue with batch support",
   "main": "index.js",
   "scripts": {
