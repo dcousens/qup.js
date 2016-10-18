@@ -21,6 +21,10 @@
     "url": "https://github.com/dcousens/qup/issues"
   },
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcousens/qup.git"
+  },
   "author": "Daniel Cousens",
   "devDependencies": {
     "standard": "*",
