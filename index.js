@@ -1,14 +1,15 @@
 function Qup (f, concurrent, batch) {
   this.q = []
   this.f = f
-  this.concurrent = concurrent
+  this.concurrent = concurrent || 1
   this.running = 0
   this.batch = batch || null
 }
 
-Qup.prototype._run = function qupRun () {
+Qup.prototype._run = function qupRun (depth) {
   if (this.running >= this.concurrent) return
   if (!this.q.length) return
+  depth = depth | 0
 
   var { p, callback } = this.q.pop()
 
@@ -16,14 +17,16 @@ Qup.prototype._run = function qupRun () {
   this.f(p, (err) => {
     this.running -= 1
 
-    this._run()
     if (callback) callback(err)
+    if (depth > 1000) setTimeout(() => this._run())
+    else this._run(depth + 1)
   })
 }
 
-Qup.prototype._runBatch = function qupRunBatch () {
+Qup.prototype._runBatch = function qupRunBatch (depth) {
   if (this.running >= this.concurrent) return
   if (!this.q.length) return
+  depth = depth | 0
 
   var ps = []
   var callbacks = []
@@ -43,7 +46,8 @@ Qup.prototype._runBatch = function qupRunBatch () {
     this.running -= 1
 
     callbacks.forEach(callback => callback(err))
-    this._runBatch()
+    if (depth > 1000) setTimeout(() => this._runBatch())
+    else this._runBatch(depth + 1)
   })
 }
 

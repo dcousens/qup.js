@@ -114,3 +114,15 @@ test('README example as expected', (t) => {
   q.push(7)
   q.push(8)
 })
+
+test('doesn\'t blow the stack', (t) => {
+  let q = qup((x, callback) => {
+    if (x === 0) return setTimeout(callback)
+    if (x === 1e6 - 1) t.end()
+
+    callback()
+  }, 1)
+
+  q.push(0)
+  for (var i = 1; i < 1e6; ++i) q.push(i)
+})
