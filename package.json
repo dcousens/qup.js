@@ -4,7 +4,6 @@
   "description": "Async concurrent queue with batch support",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm ls && npm run unit",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
     "unit": "tape test/*.js"
