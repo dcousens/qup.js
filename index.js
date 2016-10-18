@@ -11,7 +11,7 @@ Qup.prototype._run = function qupRun (depth) {
   if (!this.q.length) return
   depth = depth | 0
 
-  var { p, callback } = this.q.pop()
+  var { p, callback } = this.q.shift()
 
   this.running += 1
   this.f(p, (err) => {
@@ -57,8 +57,8 @@ Qup.prototype.push = function qupPush (p, callback) {
   if (this.running < this.concurrent) return this.batch === null ? this._run() : this._runBatch()
 }
 
-Qup.prototype.pop = function qupPop () {
-  return this.q.pop()
+Qup.prototype.clear = function qupClear () {
+  this.q = []
 }
 
 module.exports = function qup (f, concurrent, batch) {
