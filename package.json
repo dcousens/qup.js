@@ -1,7 +1,7 @@
 {
   "name": "qup",
   "version": "1.0.3",
-  "description": "Async stack-based concurrent queue with batch support",
+  "description": "Async concurrent queue with batch support",
   "main": "index.js",
   "scripts": {
     "prepublish": "npm ls && npm run unit",
@@ -11,15 +11,18 @@
   },
   "keywords": [
     "queue",
-    "stack",
     "cargo",
     "payload",
     "batch",
     "concurrent",
     "async"
   ],
-  "author": "Daniel Cousens",
+  "homepage": "https://github.com/dcousens/qup",
+  "bugs": {
+    "url": "https://github.com/dcousens/qup/issues"
+  },
   "license": "ISC",
+  "author": "Daniel Cousens",
   "devDependencies": {
     "standard": "*",
     "tape": "^4.6.0"

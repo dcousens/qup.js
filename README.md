@@ -7,6 +7,19 @@
 ## Examples
 
 ``` javascript
+let q = qup((batch, callback) => {
+	console.log(batch)
+	// => in order, [1], [2], [3], [4, 5, 6]
+
+	setTimeout(callback)
+}, 3, 10)
+
+q.push(1)
+q.push(2)
+q.push(3)
+q.push(4)
+q.push(5)
+q.push(6)
 ```
 
 
