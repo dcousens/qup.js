@@ -118,11 +118,35 @@ test('README example as expected', (t) => {
 test('doesn\'t blow the stack', (t) => {
   let q = qup((x, callback) => {
     if (x === 0) return setTimeout(callback)
-    if (x === 1e6 - 1) t.end()
+    if (x === 1e5 - 1) t.end()
 
     callback()
   }, 1)
 
   q.push(0)
-  for (var i = 1; i < 1e6; ++i) q.push(i)
+  for (var i = 1; i < 1e5; ++i) q.push(i)
+})
+
+test('clear works as expected', (t) => {
+  t.plan(6)
+  let expected = [1, 4, 5]
+
+  let q = qup((x, callback) => {
+    t.equal(x, expected[0])
+    expected.shift()
+
+    setTimeout(callback)
+  }, 1)
+
+  q.push(1)
+  q.push(2)
+  q.push(3)
+
+  t.equal(q.q.length, 2)
+  q.clear()
+  t.equal(q.q.length, 0)
+
+  q.push(4)
+  q.push(5)
+  t.equal(q.q.length, 2)
 })
