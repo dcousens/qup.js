@@ -34,6 +34,19 @@ test('runs, with N concurrent', (t) => {
   t.equal(su.q.length, 1) // 60 is now in the queue
 })
 
+test('push, with return value expected (non-batch only)', (t) => {
+  var a = 9
+  var su = qup((x, callback) => {
+    callback(null, a + x)
+  })
+
+  t.plan(2)
+  su.push(6, (err, y) => {
+    t.ifErr(err)
+    t.equal(y, 15)
+  })
+})
+
 test('runs in batches, with N concurrent', (t) => {
   t.plan(25)
 

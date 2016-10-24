@@ -15,11 +15,11 @@ Qup.prototype._run = function qupRun (depth) {
   var { p, callback } = this.q.shift()
 
   this.running += 1
-  this.f(p, (err) => {
+  this.f(p, (err, result) => {
     this.running -= 1
     if (this.dead) return
 
-    if (callback) callback(err)
+    if (callback) callback(err, result)
     if (depth > 1000) setTimeout(() => this._run())
     else this._run(depth + 1)
   })
