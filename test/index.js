@@ -150,3 +150,30 @@ test('clear works as expected', (t) => {
   q.push(5)
   t.equal(q.q.length, 2)
 })
+
+test('kill clears and stops callbacks', (t) => {
+  t.plan(3)
+
+  let q = qup((x, callback) => {
+    // test 2
+    t.ok(true)
+
+    setTimeout(callback)
+  }, 1)
+
+  q.push(1, () => {
+    // clears the queue and ceases any callbacks
+    q.kill()
+
+    // test 3
+    t.equal(q.q.length, 0)
+  })
+
+  // pushes ignored after kill
+  q.push(2)
+  q.push(3)
+  q.push(4)
+
+  // test 1
+  t.equal(q.q.length, 3)
+})

@@ -2,6 +2,7 @@ function Qup (f, concurrent, batch) {
   this.q = []
   this.f = f
   this.concurrent = concurrent || 1
+  this.dead = false
   this.running = 0
   this.batch = batch || null
 }
@@ -16,6 +17,7 @@ Qup.prototype._run = function qupRun (depth) {
   this.running += 1
   this.f(p, (err) => {
     this.running -= 1
+    if (this.dead) return
 
     if (callback) callback(err)
     if (depth > 1000) setTimeout(() => this._run())
@@ -44,6 +46,7 @@ Qup.prototype._runBatch = function qupRunBatch (depth) {
   this.running += 1
   this.f(ps, (err) => {
     this.running -= 1
+    if (this.dead) return
 
     callbacks.forEach(callback => callback(err))
     if (depth > 1000) setTimeout(() => this._runBatch())
@@ -59,6 +62,11 @@ Qup.prototype.push = function qupPush (p, callback) {
 
 Qup.prototype.clear = function qupClear () {
   this.q = []
+}
+
+Qup.prototype.kill = function qupPause () {
+  this.clear()
+  this.dead = true
 }
 
 module.exports = function qup (f, concurrent, batch) {
