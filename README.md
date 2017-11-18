@@ -14,7 +14,7 @@ let q = qup((batch, callback) => {
 	// => in order, [1], [2], [3], [4, 5, 6, 7], [8]
 
 	setTimeout(callback)
-}, 3, 4)
+}, 3, 4) // at most 3 concurrent, in batches of 4
 
 q.push(1)
 q.push(2)
