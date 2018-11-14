@@ -47,4 +47,4 @@ q.push(8)
 ```
 
 
-## License [ISC](LICENSE)
+## License [MIT](LICENSE)
