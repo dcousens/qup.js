@@ -13,7 +13,7 @@ Runs as synchronously as possible,  but is stack-blowout aware (maximum call sta
 let qup = require('qup/batch')
 let q = qup((batch, callback) => {
 	console.log(batch)
-	// => in order, [1], [2], [3], [4, 5, 6, 7], [8]
+	// => in order, [1], [2], [3], [4, 5, 6, 7], then [8]
 
 	setTimeout(callback)
 }, 3, 4) // at most 3 concurrent, in batches of 4
@@ -33,7 +33,7 @@ Serial
 let qup = require('qup')
 let q = qup((x, callback) => {
 	console.log(x)
-	// => in order, 1, 2, 3, 4, 5, 6, 7, 8
+	// => in order, 1, 2, 3, 4, 5, 6, 7, then 8
 
 	setTimeout(callback)
 }, 3)
