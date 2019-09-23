@@ -1,17 +1,17 @@
-var test = require('tape')
-var qup = require('../')
+const test = require('tape')
+const qup = require('../')
 
 test('runs, with N concurrent', (t) => {
   t.plan(12)
 
-  var accum = 0
+  let accum = 0
 
   function add (x, callback) {
     accum += x
     setTimeout(callback)
   }
 
-  var su = qup(add, 2)
+  const su = qup(add, 2)
 
   su.push(2)
   t.equal(accum, 2) // 2 was added
@@ -37,12 +37,12 @@ test('runs, with N concurrent', (t) => {
 test('README example as expected', (t) => {
   t.plan(8)
 
-  let expected = [1, 2, 3, 4, 5, 6, 7, 8]
-  let q = qup((batch, callback) => {
-    t.same(batch, expected[0])
+  const expected = [1, 2, 3, 4, 5, 6, 7, 8]
+  const q = qup((x, callback) => {
+    t.same(x, expected[0])
     expected.shift()
 
-    // => in order, [1, 2, 3, 4, 5, 6, 7, 8]
+    // => in order, 1, 2, 3, 4, 5, 6, 7, then 8
     setTimeout(callback)
   }, 3)
 
@@ -57,8 +57,8 @@ test('README example as expected', (t) => {
 })
 
 test('push, with return value expected (non-batch only)', (t) => {
-  var a = 9
-  var su = qup((x, callback) => {
+  const a = 9
+  const su = qup((x, callback) => {
     callback(null, a + x)
   })
 
@@ -70,7 +70,7 @@ test('push, with return value expected (non-batch only)', (t) => {
 })
 
 test('doesn\'t blow the stack', (t) => {
-  let q = qup((x, callback) => {
+  const q = qup((x, callback) => {
     if (x === 0) return setTimeout(callback)
     if (x === 1e5 - 1) t.end()
 
@@ -78,14 +78,14 @@ test('doesn\'t blow the stack', (t) => {
   }, 1)
 
   q.push(0)
-  for (var i = 1; i < 1e5; ++i) q.push(i)
+  for (let i = 1; i < 1e5; ++i) q.push(i)
 })
 
 test('clear works as expected', (t) => {
   t.plan(6)
-  let expected = [1, 4, 5]
+  const expected = [1, 4, 5]
 
-  let q = qup((x, callback) => {
+  const q = qup((x, callback) => {
     t.equal(x, expected[0])
     expected.shift()
 
@@ -108,7 +108,7 @@ test('clear works as expected', (t) => {
 test('kill clears and stops callbacks', (t) => {
   t.plan(3)
 
-  let q = qup((x, callback) => {
+  const q = qup((x, callback) => {
     // test 2
     t.ok(true)
 

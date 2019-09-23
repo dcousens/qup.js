@@ -1,10 +1,10 @@
-var test = require('tape')
-var qup = require('../batch')
+const test = require('tape')
+const qup = require('../batch')
 
 test('runs in batches, with N concurrent', (t) => {
   t.plan(25)
 
-  var accum = 0
+  let accum = 0
 
   function addBatch (xs, callback) {
     t.ok(xs.length <= 2)
@@ -15,7 +15,7 @@ test('runs in batches, with N concurrent', (t) => {
     })
   }
 
-  var su = qup(addBatch, 2, 2)
+  const su = qup(addBatch, 2, 2)
 
   su.push(2)
   t.equal(su.running, 1) // waiting for setTimeout
@@ -63,12 +63,12 @@ test('runs in batches, with N concurrent', (t) => {
 test('README example as expected', (t) => {
   t.plan(5)
 
-  let expected = [[1], [2], [3], [4, 5, 6, 7], [8]]
-  let q = qup((batch, callback) => {
+  const expected = [[1], [2], [3], [4, 5, 6, 7], [8]]
+  const q = qup((batch, callback) => {
     t.same(batch, expected[0])
     expected.shift()
 
-    // => in order, [1], [2], [3], [4, 5, 6, 7], [8]
+    // => in order, [1], [2], [3], [4, 5, 6, 7], then [8]
     setTimeout(callback)
   }, 3, 4)
 
@@ -83,7 +83,7 @@ test('README example as expected', (t) => {
 })
 
 test('batch doesn\'t blow the stack', (t) => {
-  let q = qup((xs, callback) => {
+  const q = qup((xs, callback) => {
     let timeout = false
     xs.forEach((x) => {
       if (x === 0) timeout = true
@@ -95,5 +95,5 @@ test('batch doesn\'t blow the stack', (t) => {
   }, 1, 2)
 
   q.push(0)
-  for (var i = 1; i < 1e5; ++i) q.push(i)
+  for (let i = 1; i < 1e5; ++i) q.push(i)
 })
