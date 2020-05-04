@@ -81,7 +81,7 @@ test('doesn\'t blow the stack', (t) => {
   for (let i = 1; i < 1e5; ++i) q.push(i)
 })
 
-test('clear works as expected', (t) => {
+test('clear, depletes the queue', (t) => {
   t.plan(6)
   const expected = [1, 4, 5]
 
@@ -105,29 +105,33 @@ test('clear works as expected', (t) => {
   t.equal(q.q.length, 2)
 })
 
-test('kill clears and stops callbacks', (t) => {
-  t.plan(3)
+test('kill, depletes the queue and ignores running', (t) => {
+  t.plan(5)
 
+  let i = null
   const q = qup((x, callback) => {
-    // test 2
-    t.ok(true)
-
+    i = x
     setTimeout(callback)
   }, 1)
 
   q.push(1, () => {
-    // clears the queue and ceases any callbacks
-    q.kill()
+    t.equal(i, 1)
 
-    // test 3
-    t.equal(q.q.length, 0)
+    // delay, 2 will start, but never callback
+    setTimeout(() => {
+      q.kill()
+      t.equal(q.q.length, 0)
+    })
   })
 
-  // pushes ignored after kill
-  q.push(2)
-  q.push(3)
-  q.push(4)
-
-  // test 1
+  // NOTE: these will never happend
+  q.push(2, () => t.fail()) // will set i = 2, but not fail
+  q.push(3, () => t.fail())
+  q.push(4, () => t.fail())
   t.equal(q.q.length, 3)
+
+  setTimeout(() => {
+    t.equal(i, 2)
+    t.equal(q.q.length, 0)
+  }, 100)
 })

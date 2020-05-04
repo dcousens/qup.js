@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/dcousens/qup/issues"
   },
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/dcousens/qup.git"
@@ -28,6 +28,6 @@
   "author": "Daniel Cousens",
   "devDependencies": {
     "standard": "*",
-    "tape": "^4.6.0"
+    "tape": "^5.0.0"
   }
 }
