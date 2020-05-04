@@ -81,7 +81,7 @@ test('doesn\'t blow the stack', (t) => {
   for (let i = 1; i < 1e5; ++i) q.push(i)
 })
 
-test('clear, depletes the queue', (t) => {
+test('clear, empties the queue', (t) => {
   t.plan(6)
   const expected = [1, 4, 5]
 
@@ -105,7 +105,7 @@ test('clear, depletes the queue', (t) => {
   t.equal(q.q.length, 2)
 })
 
-test('kill, depletes the queue and ignores running', (t) => {
+test('kill, empties the queue and ignores running', (t) => {
   t.plan(5)
 
   let i = null
