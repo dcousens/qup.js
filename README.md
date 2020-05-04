@@ -20,12 +20,12 @@ let q = qup((batch, callback) => {
 
 q.push(1)
 q.push(2)
-q.push(3)
+q.push(3) // waits until [1], [2], [3]
 q.push(4)
 q.push(5)
 q.push(6)
 q.push(7)
-q.push(8)
+q.push(8) // waits until [4, 5, 6, 7]
 ```
 
 Serial
@@ -36,14 +36,14 @@ let q = qup((x, callback) => {
 	// => in order, 1, 2, 3, 4, 5, 6, 7, then 8
 
 	setTimeout(callback)
-}, 3)
+}, 3) // at most 3 concurrent, no batching
 
 q.push(1)
 q.push(2)
 q.push(3)
-q.push(4)
-q.push(5)
-q.push(6)
+q.push(4) // waits until 1, 2, 3
+q.push(5) // waits until 4
+q.push(6) // ...etc
 q.push(7)
 q.push(8)
 ```
