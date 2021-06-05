@@ -23,10 +23,10 @@ export default function qup (f, jobs = 1) {
     run()
 
     // drained?
-    if (running === 0 && q.length === 0) {
-      for (const resolve of draining) resolve()
-      draining = []
-    }
+    if (running || q.length) return
+
+    for (const resolve of draining) resolve()
+    draining = []
   }
 
   function push (parameters) {
