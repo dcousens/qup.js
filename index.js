@@ -1,46 +1,48 @@
-function Qup (f, concurrent) {
-  this.q = []
-  this.f = f
-  this.concurrent = concurrent || 1
-  this.dead = false
-  this.running = 0
-}
+export default function qup (f, jobs = 1) {
+  let q = []
+  let draining = []
+  let running = 0
 
-Qup.prototype._run = function qupRun (depth) {
-  if (this.running >= this.concurrent) return
-  if (!this.q.length) return
-  depth = depth | 0
+  async function run () {
+    if (running >= jobs) return
+    if (!q.length) return
 
-  var { p, callback } = this.q.shift()
+    const { parameters, resolve, reject } = q.shift()
 
-  this.running += 1
-  this.f(p, (err, result) => {
-    this.running -= 1
-    if (this.dead) return
+    running += 1
+    let result, err
+    try {
+      result = await f(parameters)
+    } catch (e) {
+      err = e
+    }
 
-    if (callback) callback(err, result)
-    if (depth > 1000) setTimeout(() => this._run())
-    else this._run(depth + 1)
-  })
-}
+    running -= 1
+    if (err) return reject(err)
+    resolve(result)
+    run()
 
-Qup.prototype.push = function qupPush (p, callback) {
-  this.q.push({ p, callback })
+    // drained?
+    if (running === 0 && q.length === 0) {
+      for (const resolve of draining) resolve()
+      draining = []
+    }
+  }
 
-  if (this.running < this.concurrent) return this._run()
-}
+  function push (parameters) {
+    return new Promise((resolve, reject) => {
+      q.push({ parameters, resolve, reject })
+      if (running < jobs) return run()
+    })
+  }
 
-Qup.prototype.clear = function qupClear () {
-  this.q = []
-}
+  function drain () {
+    if (running === 0) return
+    return new Promise((resolve) => draining.push(resolve))
+  }
 
-Qup.prototype.kill = function qupPause () {
-  this.clear()
-  this.dead = true
-}
-
-module.exports = function qup (f, concurrent, __batch) {
-  // use qup/batch
-  if (__batch !== undefined) throw new TypeError('for 2.0.0, use "qup/batch"')
-  return new Qup(f, concurrent)
+  return {
+    push,
+    drain
+  }
 }

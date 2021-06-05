@@ -1,137 +1,122 @@
-const test = require('tape')
-const qup = require('../')
+import qup from '../index.js'
 
-test('runs, with N concurrent', (t) => {
-  t.plan(12)
+const tests = []
+async function test (description, f) {
+  tests.push({ description, f })
+  if (tests.length > 1) return
 
-  let accum = 0
-
-  function add (x, callback) {
-    accum += x
-    setTimeout(callback)
+  function equal (a, b) {
+    const ja = JSON.stringify(a)
+    const jb = JSON.stringify(b)
+    if (ja !== jb) throw new Error(`${ja} != ${jb}`)
+    console.error(` ${ja} = ${jb}`)
   }
 
-  const su = qup(add, 2)
+  setTimeout(async () => {
+    for (const { description, f } of tests) {
+      console.error(description)
+      try {
+        await f({ equal })
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    }
+  })
+}
 
-  su.push(2)
-  t.equal(accum, 2) // 2 was added
-  t.equal(su.running, 1) // add is now waiting on setTimeout
-  t.equal(su.q.length, 0) // nothing is left in the queue
-
-  su.push(3)
-  t.equal(accum, 5) // 3 was added
-  t.equal(su.running, 2) // two add's are now waiting on setTimeout
-  t.equal(su.q.length, 0) // still, nothing is left in the queue
-
-  su.push(60, () => {
-    t.equal(accum, 65) // 60 was added
-    t.equal(su.running, 0) // nothing is running during a callback
-    t.equal(su.q.length, 0) // nothing is left in the queue
+test('minimal', async (t) => {
+  const fsquare = qup((x) => {
+    return x * x
   })
 
-  t.equal(accum, 5) // nothing was added
-  t.equal(su.running, 2) // two add's are still waiting on setTimeout
-  t.equal(su.q.length, 1) // 60 is now in the queue
+  t.equal(await fsquare.push(2), 4)
+  t.equal(await fsquare.push(4), 16)
+
+  const squares = [2, 4, 8].map(x => fsquare.push(x))
+  t.equal(await Promise.all(squares), [4, 16, 64])
 })
 
-test('README example as expected', (t) => {
-  t.plan(8)
-
-  const expected = [1, 2, 3, 4, 5, 6, 7, 8]
-  const q = qup((x, callback) => {
-    t.same(x, expected[0])
-    expected.shift()
-
-    // => in order, 1, 2, 3, 4, 5, 6, 7, then 8
-    setTimeout(callback)
-  }, 3)
-
-  q.push(1)
-  q.push(2)
-  q.push(3)
-  q.push(4)
-  q.push(5)
-  q.push(6)
-  q.push(7)
-  q.push(8)
-})
-
-test('push, with return value expected (non-batch only)', (t) => {
-  const a = 9
-  const su = qup((x, callback) => {
-    callback(null, a + x)
-  })
-
-  t.plan(2)
-  su.push(6, (err, y) => {
-    t.ifErr(err)
-    t.equal(y, 15)
-  })
-})
-
-test('doesn\'t blow the stack', (t) => {
-  const q = qup((x, callback) => {
-    if (x === 0) return setTimeout(callback)
-    if (x === 1e5 - 1) t.end()
-
-    callback()
+test('not synchronous', async (t) => {
+  let value = 0
+  const fset = qup((x) => {
+    value = x
+    return value
   }, 1)
 
-  q.push(0)
-  for (let i = 1; i < 1e5; ++i) q.push(i)
+  t.equal(value, 0)
+  const fa = fset.push(1)
+  t.equal(value, 1)
+  t.equal(await fa, 1)
+
+  const fb = fset.push(2)
+  t.equal(value, 2)
+  const fc = fset.push(3)
+  t.equal(value, 2) // jobs = 1, wait...
+  t.equal(await fb, 2)
+  t.equal(value, 3)
+  t.equal(await fc, 3)
 })
 
-test('clear, empties the queue', (t) => {
-  t.plan(6)
-  const expected = [1, 4, 5]
-
-  const q = qup((x, callback) => {
-    t.equal(x, expected[0])
-    expected.shift()
-
-    setTimeout(callback)
-  }, 1)
-
-  q.push(1)
-  q.push(2)
-  q.push(3)
-
-  t.equal(q.q.length, 2)
-  q.clear()
-  t.equal(q.q.length, 0)
-
-  q.push(4)
-  q.push(5)
-  t.equal(q.q.length, 2)
-})
-
-test('kill, empties the queue and ignores running', (t) => {
-  t.plan(5)
-
-  let i = null
-  const q = qup((x, callback) => {
-    i = x
-    setTimeout(callback)
-  }, 1)
-
-  q.push(1, () => {
-    t.equal(i, 1)
-
-    // delay, 2 will start, but never callback
-    setTimeout(() => {
-      q.kill()
-      t.equal(q.q.length, 0)
-    })
+function sleep (ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
   })
+}
 
-  // NOTE: these will never happend
-  q.push(2, () => t.fail()) // will set i = 2, but not fail
-  q.push(3, () => t.fail())
-  q.push(4, () => t.fail())
-  t.equal(q.q.length, 3)
+test('asynchronous', async (t) => {
+  let value = 0
+  const fset = qup(async (x) => {
+    await sleep(10)
+    value = x
+    return value
+  }, 1)
 
-  setTimeout(() => {
-    t.equal(i, 2)
-    t.equal(q.q.length, 0)
-  }, 100)
+  t.equal(value, 0)
+  const fa = fset.push(1)
+  t.equal(value, 0) // sleeping...
+  t.equal(await fa, 1)
+
+  const fb = fset.push(2)
+  t.equal(value, 1) // sleeping
+  const fc = fset.push(3)
+  t.equal(value, 1) // sleeping
+  t.equal(await fb, 2)
+  t.equal(value, 2) // sleeping, jobs = 1
+  t.equal(await fc, 3)
+})
+
+test('drainable', async (t) => {
+  let value = 0
+  const fset = qup(async (x) => {
+    await sleep(1)
+    value = x
+  }, 1)
+
+  for (let i = 0; i < 100; ++i) {
+    fset.push(i)
+  }
+
+  t.equal(value, 0)
+  await fset.drain()
+  t.equal(value, 99)
+})
+
+test('jobs > 1', async (t) => {
+  let value = 0
+  const finc = qup(async () => {
+    await sleep(1)
+    value += 1
+    return value
+  }, 5)
+
+  for (let i = 0; i < 5; ++i) finc.push()
+  t.equal(value, 0)
+  t.equal(await finc.push(), 6)
+  for (let i = 0; i < 10; ++i) finc.push()
+  t.equal(value, 6)
+  await sleep(1) // wait ~5
+  t.equal(value, 11)
+  await sleep(1) // wait ~5
+  t.equal(value, 16)
 })
