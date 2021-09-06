@@ -6,8 +6,8 @@ Javascript `async/await` stack-based concurrent queue.
 ## Examples
 
 ``` javascript
-const q = qup(async (headers) => {
-	return await fetch(..., headers)
+const q = qup(async (...parameters) => {
+	return await fetch(...parameters)
 }, 2) // at most 2 concurrent
 
 await q.push({ ... })
