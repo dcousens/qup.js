@@ -4,7 +4,6 @@
   "description": "Async batched concurrent queue",
   "author": "Daniel Cousens",
   "license": "MIT",
-  "type": "module",
   "homepage": "https://github.com/dcousens/qup",
   "repository": {
     "type": "git",

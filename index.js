@@ -1,4 +1,4 @@
-export default function qup (f, jobs = 1) {
+module.exports = function qup (f, jobs = 1) {
   let q = []
   let draining = []
   let running = 0
