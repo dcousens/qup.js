@@ -6,17 +6,27 @@ Javascript `async/await` stack-based concurrent queue.
 ## Examples
 
 ``` javascript
-const q = qup(async (parameters) => {
-  return await fetch(parameters)
+const q = qup(async (x) => {
+  return x * x
 }, 2) // at most 2 concurrent
 
-await q.push({ ... })
-await q.push({ ... })
+await q.push(2)
+// => 4
 
-q.push({ ... })
-q.push({ ... })
-q.push({ ... })
+await q.push(4)
+// => 16
 
+q.push(3)
+// => Promise { <pending> }
+
+await Promise.all([
+  q.push(2),
+  q.push(4),
+  q.push(8)
+])
+// => [4, 16, 64]
+
+// or
 await q.drain()
 ```
 
