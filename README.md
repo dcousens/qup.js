@@ -1,5 +1,6 @@
 # qup
-[![Version](http://img.shields.io/npm/v/qup.svg)](https://www.npmjs.org/package/qup)
+[![NPM](https://img.shields.io/npm/v/qup.svg)](https://www.npmjs.org/package/qup)
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
 Javascript `async/await` stack-based concurrent queue.
 

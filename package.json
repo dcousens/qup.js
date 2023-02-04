@@ -2,20 +2,18 @@
   "name": "qup",
   "version": "3.0.1",
   "description": "Async batched concurrent queue",
-  "author": "Daniel Cousens",
-  "license": "MIT",
-  "homepage": "https://github.com/dcousens/qup",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dcousens/qup.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dcousens/qup/issues"
-  },
   "main": "index.js",
   "scripts": {
     "test": "node test/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcousens/qup.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dcousens/qup.js/issues"
+  },
+  "homepage": "https://github.com/dcousens/qup.js",
   "keywords": [
     "async",
     "await",
@@ -24,5 +22,10 @@
     "concurrent",
     "payload",
     "queue"
-  ]
+  ],
+  "author": "Daniel Cousens",
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "*"
+  }
 }
