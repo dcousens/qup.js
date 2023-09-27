@@ -120,3 +120,37 @@ test('jobs > 1', async (t) => {
   await sleep(1) // wait ~5
   t.equal(value, 16)
 })
+
+test('asynchronous (timed)', async (t) => {
+  const ff = qup(async (f) => {
+    return await f()
+  }, 100)
+
+  console.time('waiting')
+  t.equal(await Promise.all([
+    ff.push(() => 1),
+    ff.push(async () => {
+      await sleep(100)
+      return 3
+    }),
+    ff.push(async () => {
+      await sleep(200)
+      return 7
+    }),
+    ff.push(async () => {
+      await sleep(200)
+      return 99
+    }),
+    ff.push(async () => {
+      await sleep(100)
+      return 155
+    }),
+  ]), [
+    1,
+    3,
+    7,
+    99,
+    155
+  ])
+  console.timeEnd('waiting') // should be ~200ms
+})
