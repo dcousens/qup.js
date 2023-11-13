@@ -31,7 +31,7 @@
   },
   "exports": {
     ".": {
-      "require": "./cjs.js",
+      "require": "./export.js",
       "import": "./index.js"
     }
   },
