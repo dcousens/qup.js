@@ -30,4 +30,4 @@ await Promise.all([
 await q.drain()
 ```
 
-## License [MIT](LICENSE)
+## LICENSE [MIT](LICENSE)
