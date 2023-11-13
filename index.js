@@ -15,12 +15,12 @@ module.exports = function qup (f, jobs = 1) {
     if (running >= jobs) return
     if (!q.length) return
 
-    const { parameters, resolve, reject } = q.shift()
+    const { context, resolve, reject } = q.shift()
 
     running += 1
     let result, err
     try {
-      result = await f(parameters)
+      result = await f(context)
     } catch (e) {
       err = e
     }
@@ -35,10 +35,10 @@ module.exports = function qup (f, jobs = 1) {
     drain_.resolve()
   }
 
-  function push (parameters) {
+  function push (context) {
     drain_ = signal()
     return new Promise((resolve, reject) => {
-      q.push({ parameters, resolve, reject })
+      q.push({ context, resolve, reject })
       if (running < jobs) return run()
     })
   }
