@@ -135,3 +135,34 @@ test('job queue', async () => {
   const after = Date.now()
   t.equal(near(after - before, 200, 0.1), 200)
 })
+
+for (let j = 1; j <= 10; ++j) {
+  const concurrency = j
+
+  test(`job queue (concurrency of ${concurrency})`, async () => {
+    let running = 0
+    const fq = qup(async (f) => {
+      t.ok(running <= concurrency) // ensure concurrency isn't exceeeded
+      running += 1
+      await f()
+      running -= 1
+    }, concurrency)
+
+    const before = Date.now()
+
+    let count = 0
+    for (let i = 0; i < 100; ++i) {
+      fq.push(async () => {
+        await sleep(10)
+        ++count
+      })
+    }
+
+    await fq.drain()
+    const after = Date.now()
+    const target = (100 * 10) / concurrency
+
+    t.equal(count, 100)
+    t.equal(near(after - before, target, 0.3), target)
+  })
+}
