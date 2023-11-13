@@ -131,7 +131,7 @@ test('job queue', async () => {
   }, 100)
 
   const before = Date.now()
-  t.deepEqual(await Promise.all([
+  const result = await Promise.all([
     fq.push(() => 1),
     fq.push(async () => {
       await sleep(100)
@@ -149,10 +149,11 @@ test('job queue', async () => {
       await sleep(100)
       return 155
     }),
-  ]), [1, 3, 7, 99, 155])
+  ])
 
   const after = Date.now()
   t.equal(near(after - before, 200, 0.1), 200)
+  t.deepEqual(result, [1, 3, 7, 99, 155])
 })
 
 for (let j = 1; j <= 10; ++j) {
