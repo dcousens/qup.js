@@ -1,31 +1,10 @@
+import { test } from 'node:test'
+import t from 'node:assert'
 import qup from '../index.js'
 
 const tests = []
-async function test (description, f) {
-  tests.push({ description, f })
-  if (tests.length > 1) return
 
-  function equal (a, b) {
-    const ja = JSON.stringify(a)
-    const jb = JSON.stringify(b)
-    if (ja !== jb) throw new Error(`${ja} != ${jb}`)
-    console.error(` ${ja} = ${jb}`)
-  }
-
-  setTimeout(async () => {
-    for (const { description, f } of tests) {
-      console.error(description)
-      try {
-        await f({ equal })
-      } catch (e) {
-        console.error(e)
-        process.exit(1)
-      }
-    }
-  })
-}
-
-test('minimal', async (t) => {
+test('minimal', async () => {
   const fsquare = qup((x) => {
     return x * x
   })
@@ -34,10 +13,10 @@ test('minimal', async (t) => {
   t.equal(await fsquare.push(4), 16)
 
   const squares = [2, 4, 8].map(x => fsquare.push(x))
-  t.equal(await Promise.all(squares), [4, 16, 64])
+  t.deepEqual(await Promise.all(squares), [4, 16, 64])
 })
 
-test('not synchronous', async (t) => {
+test('not synchronous', async () => {
   let value = 0
   const fset = qup((x) => {
     value = x
@@ -64,7 +43,7 @@ function sleep (ms) {
   })
 }
 
-test('asynchronous', async (t) => {
+test('asynchronous', async () => {
   let value = 0
   const fset = qup(async (x) => {
     await sleep(10)
@@ -86,7 +65,7 @@ test('asynchronous', async (t) => {
   t.equal(await fc, 3)
 })
 
-test('drainable', async (t) => {
+test('drainable', async () => {
   let value = 0
   const fset = qup(async (x) => {
     await sleep(1)
@@ -102,7 +81,7 @@ test('drainable', async (t) => {
   t.equal(value, 99)
 })
 
-test('jobs > 1', async (t) => {
+test('jobs > 1', async () => {
   let value = 0
   const finc = qup(async () => {
     await sleep(1)
@@ -121,13 +100,19 @@ test('jobs > 1', async (t) => {
   t.equal(value, 16)
 })
 
-test('asynchronous (timed)', async (t) => {
+function near (x, value, error = 0.1) {
+  const d = value * error
+  if (Math.abs(x - value) < d) return value
+  return x
+}
+
+test('job queue', async () => {
   const ff = qup(async (f) => {
     return await f()
   }, 100)
 
-  console.time('waiting')
-  t.equal(await Promise.all([
+  const before = Date.now()
+  t.deepEqual(await Promise.all([
     ff.push(() => 1),
     ff.push(async () => {
       await sleep(100)
@@ -152,5 +137,7 @@ test('asynchronous (timed)', async (t) => {
     99,
     155
   ])
-  console.timeEnd('waiting') // should be ~200ms
+
+  const after = Date.now()
+  t.equal(near(after - before, 200, 0.1), 200)
 })
