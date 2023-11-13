@@ -21,15 +21,15 @@ module.exports = function qup (f, jobs = 1) {
     const { context, resolve, reject } = next
 
     running += 1
-    let result, err
+    let result
     try {
       result = await f(context)
     } catch (e) {
-      err = e
+      running -= 1
+      return reject(e)
     }
 
     running -= 1
-    if (err) return reject(err)
     resolve(result)
     run()
 
