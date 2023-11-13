@@ -1,6 +1,8 @@
+"use strict"
+
 module.exports = function qup (f, jobs = 1) {
   function signal () {
-    let resolve_ = null
+    let resolve = null
     const promise = new Promise((resolve_) => {
       resolve = resolve_
     })
