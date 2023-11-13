@@ -1,11 +1,14 @@
 name: Publish
 
 on:
+  release:
+    types: [created]
+
   workflow_dispatch:
     inputs:
       npm_tag:
+        default: 'latest'
         description: 'npm tag to publish to'
-        required: true
 
 permissions:
   id-token: write
@@ -23,26 +26,13 @@ jobs:
 
       - uses: ./.github/composites/setup
 
-      # see https://github.com/actions/checkout/tree/main#push-a-commit-using-the-built-in-token
-      - name: git config
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
-      - name: git tag
-        run: |
-          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag -a '{}' -m '{}'"
-
       - run: pnpm build
-      - run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: npm publish
-        run: pnpm publish --access=public --tag ${{ inputs.npm_tag }} --recursive --report-summary
+        run: |
+          cp LICENSE dist/
+          cd dist/
+          npm config set 'https://registry.npmjs.org/:_authToken' '${NODE_AUTH_TOKEN}'
+          npm publish --provenance --access=public --tag ${{ inputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
-
-      - name: git push
-        run: git push origin --tags
