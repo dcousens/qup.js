@@ -13,9 +13,10 @@ module.exports = function qup (f, jobs = 1) {
 
   async function run () {
     if (running >= jobs) return
-    if (!q.length) return
 
-    const { context, resolve, reject } = q.shift()
+    const next = q.shift()
+    if (!next) return
+    const { context, resolve, reject } = next
 
     running += 1
     let result, err
