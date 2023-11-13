@@ -107,36 +107,30 @@ function near (x, value, error = 0.1) {
 }
 
 test('job queue', async () => {
-  const ff = qup(async (f) => {
+  const fq = qup(async (f) => {
     return await f()
   }, 100)
 
   const before = Date.now()
   t.deepEqual(await Promise.all([
-    ff.push(() => 1),
-    ff.push(async () => {
+    fq.push(() => 1),
+    fq.push(async () => {
       await sleep(100)
       return 3
     }),
-    ff.push(async () => {
+    fq.push(async () => {
       await sleep(200)
       return 7
     }),
-    ff.push(async () => {
+    fq.push(async () => {
       await sleep(200)
       return 99
     }),
-    ff.push(async () => {
+    fq.push(async () => {
       await sleep(100)
       return 155
     }),
-  ]), [
-    1,
-    3,
-    7,
-    99,
-    155
-  ])
+  ]), [1, 3, 7, 99, 155])
 
   const after = Date.now()
   t.equal(near(after - before, 200, 0.1), 200)
