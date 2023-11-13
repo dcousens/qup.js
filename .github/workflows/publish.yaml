@@ -38,7 +38,7 @@ jobs:
       - name: git tag
         shell: bash
         run: |
-          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag '{}'"
+          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag -a '{}' -m '{}'"
 
       - name: git push
         run: git push origin --tags
