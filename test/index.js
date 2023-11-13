@@ -81,6 +81,25 @@ test('drainable', async () => {
   t.equal(value, 99)
 })
 
+test('drained to start', async () => {
+  const f = qup(async () => {}, 1)
+
+  t.ok(f.drain() instanceof Promise)
+  await f.drain()
+  await f.drain()
+  await f.drain()
+})
+
+test('drains many times', async () => {
+  const f = qup(async () => {}, 1)
+
+  for (let i = 0; i < 10; ++i) {
+    f.push()
+    t.ok(f.drain() instanceof Promise)
+    t.equal(await f.drain(), undefined)
+  }
+})
+
 test('jobs > 1', async () => {
   let value = 0
   const finc = qup(async () => {

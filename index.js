@@ -1,6 +1,14 @@
 module.exports = function qup (f, jobs = 1) {
+  function signal () {
+    let resolve_ = null
+    const promise = new Promise((resolve_) => {
+      resolve = resolve_
+    })
+    return { promise, resolve }
+  }
+
   let q = []
-  let draining = []
+  let drain_ = signal()
   let running = 0
 
   async function run () {
@@ -22,14 +30,13 @@ module.exports = function qup (f, jobs = 1) {
     resolve(result)
     run()
 
-    // drained?
+    // ready to drain?
     if (running || q.length) return
-
-    for (const resolve of draining) resolve()
-    draining = []
+    drain_.resolve()
   }
 
   function push (parameters) {
+    drain_ = signal()
     return new Promise((resolve, reject) => {
       q.push({ parameters, resolve, reject })
       if (running < jobs) return run()
@@ -37,10 +44,11 @@ module.exports = function qup (f, jobs = 1) {
   }
 
   function drain () {
-    if (running === 0) return
-    return new Promise((resolve) => draining.push(resolve))
+    return drain_.promise
   }
 
+  // drained to begin with
+  drain_.resolve()
   return {
     push,
     drain
