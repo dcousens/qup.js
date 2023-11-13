@@ -24,7 +24,6 @@
   "homepage": "https://github.com/dcousens/qup.js",
   "type": "module",
   "packageManager": "pnpm@8.10.2",
-  "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "test:types": "tsc -p tsconfig.json",
