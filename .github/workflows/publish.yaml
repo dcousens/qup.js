@@ -23,8 +23,17 @@ jobs:
 
       - uses: ./.github/composites/setup
 
-      - run: pnpm build
+      # see https://github.com/actions/checkout/tree/main#push-a-commit-using-the-built-in-token
+      - name: git config
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
 
+      - name: git tag
+        run: |
+          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag -a '{}' -m '{}'"
+
+      - run: pnpm build
       - run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -34,11 +43,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-
-      - name: git tag
-        shell: bash
-        run: |
-          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag -a '{}' -m '{}'"
 
       - name: git push
         run: git push origin --tags
