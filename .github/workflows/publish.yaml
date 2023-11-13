@@ -29,16 +29,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: git tag
-        shell: bash
-        run: |
-          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag '{}'"
-
       - name: npm publish
         run: pnpm publish --access=public --tag ${{ inputs.npm_tag }} --recursive --report-summary
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+
+      - name: git tag
+        shell: bash
+        run: |
+          bash -c "jq -r '\"v\" + .version' package.json | xargs -I '{}' git tag '{}'"
 
       - name: git push
         run: git push origin --tags
