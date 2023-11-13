@@ -1,7 +1,8 @@
 # qup
 [![NPM](https://img.shields.io/npm/v/qup.svg)](https://www.npmjs.org/package/qup)
 
-Javascript `async/await` stack-based concurrent queue.
+A compact `async/await` stack-based concurrent queue for Javascript.
+No dependencies.
 
 ## Examples
 
