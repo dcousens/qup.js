@@ -28,7 +28,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "test:types": "tsc -p tsconfig.json",
-    "test:unit": "node --test --loader tsx test/*.ts",
+    "test:unit": "node --test --import tsx tests/*.ts",
     "test": "pnpm test:types && pnpm test:unit"
   },
   "devDependencies": {

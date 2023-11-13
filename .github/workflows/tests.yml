@@ -21,7 +21,7 @@ jobs:
       - run: pnpm build
 
   types:
-    name: TypeScript
+    name: Types
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
@@ -31,12 +31,6 @@ jobs:
   unit:
     name: Unit Tests
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # see https://nodejs.org/en/about/releases/
-        node-version: [16.x, 18.x, 20.x]
-
     steps:
       - uses: actions/checkout@main
       - uses: ./.github/composites/setup
