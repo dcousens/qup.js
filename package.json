@@ -24,8 +24,5 @@
     "queue"
   ],
   "author": "Daniel Cousens",
-  "license": "MIT",
-  "devDependencies": {
-    "standard": "*"
-  }
+  "license": "MIT"
 }
