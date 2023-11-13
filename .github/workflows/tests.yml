@@ -5,9 +5,31 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: ./.github/composites/setup
+      - run: pnpm build
+
+  types:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: ./.github/composites/setup
+      - run: pnpm test:types
+
   unit:
+    name: Unit Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -16,9 +38,6 @@ jobs:
         node-version: [16.x, 18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@main
-    - uses: actions/setup-node@main
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm test
+      - uses: actions/checkout@main
+      - uses: ./.github/composites/setup
+      - run: pnpm test:unit

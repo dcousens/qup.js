@@ -1,0 +1,18 @@
+name: Setup
+runs:
+  using: 'composite'
+  steps:
+    - run: set -o pipefail
+      shell: bash
+
+    - run: corepack enable
+      shell: bash
+
+    - uses: actions/setup-node@main
+      with:
+        node-version: 20
+        registry-url: 'https://registry.npmjs.org'
+        cache: pnpm
+
+    - run: pnpm install
+      shell: bash

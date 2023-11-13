@@ -5,7 +5,7 @@ import qup from '../index.js'
 const tests = []
 
 test('minimal', async () => {
-  const fsquare = qup((x) => {
+  const fsquare = qup((x: number) => {
     return x * x
   })
 
@@ -18,7 +18,7 @@ test('minimal', async () => {
 
 test('not synchronous', async () => {
   let value = 0
-  const fset = qup((x) => {
+  const fset = qup((x: number) => {
     value = x
     return value
   }, 1)
@@ -37,7 +37,7 @@ test('not synchronous', async () => {
   t.equal(await fc, 3)
 })
 
-function sleep (ms) {
+function sleep (ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
@@ -45,7 +45,7 @@ function sleep (ms) {
 
 test('asynchronous', async () => {
   let value = 0
-  const fset = qup(async (x) => {
+  const fset = qup(async (x: number) => {
     await sleep(10)
     value = x
     return value
@@ -67,7 +67,7 @@ test('asynchronous', async () => {
 
 test('drainable', async () => {
   let value = 0
-  const fset = qup(async (x) => {
+  const fset = qup(async (x: number) => {
     await sleep(1)
     value = x
   }, 1)
@@ -91,7 +91,7 @@ test('drained to start', async () => {
 })
 
 test('drains many times', async () => {
-  const f = qup(async () => {}, 1)
+  const f = qup<void, void>(async () => {}, 1)
 
   for (let i = 0; i < 10; ++i) {
     f.push()
@@ -119,14 +119,14 @@ test('jobs > 1', async () => {
   t.equal(value, 16)
 })
 
-function near (x, value, error = 0.1) {
+function near (x: number, value: number, error = 0.1) {
   const d = value * error
   if (Math.abs(x - value) < d) return value
   return x
 }
 
 test('job queue', async () => {
-  const fq = qup(async (f) => {
+  const fq = qup(async (f: () => number | Promise<number>) => {
     return await f()
   }, 100)
 
@@ -160,7 +160,7 @@ for (let j = 1; j <= 10; ++j) {
 
   test(`job queue (limit of ${limit} jobs)`, async () => {
     let running = 0
-    const fq = qup(async (f) => {
+    const fq = qup(async (f: () => Promise<void>) => {
       t.ok(running <= limit) // ensure limit isn't exceeeded
       running += 1
       await f()

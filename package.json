@@ -1,11 +1,19 @@
 {
   "name": "qup",
   "version": "3.0.2",
+  "license": "MIT",
+  "author": "Daniel Cousens",
   "description": "Async batched concurrent queue",
-  "main": "index.js",
-  "scripts": {
-    "test": "node --test test/*.js"
-  },
+  "keywords": [
+    "async",
+    "await",
+    "batch",
+    "cargo",
+    "concurrent",
+    "payload",
+    "queue",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/dcousens/qup.js.git"
@@ -14,15 +22,21 @@
     "url": "https://github.com/dcousens/qup.js/issues"
   },
   "homepage": "https://github.com/dcousens/qup.js",
-  "keywords": [
-    "async",
-    "await",
-    "batch",
-    "cargo",
-    "concurrent",
-    "payload",
-    "queue"
-  ],
-  "author": "Daniel Cousens",
-  "license": "MIT"
+  "type": "module",
+  "packageManager": "pnpm@8.10.2",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.dist.json",
+    "test:types": "tsc -p tsconfig.json",
+    "test:unit": "node --test --loader tsx test/*.ts",
+    "test": "pnpm test:types && pnpm test:unit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2"
+  },
+  "publishConfig": {
+    "directory": "dist"
+  }
 }

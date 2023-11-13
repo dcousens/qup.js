@@ -1,15 +1,17 @@
-"use strict"
-
-module.exports = function qup (f, jobs = 1) {
+export default function qup<C = void, T = void> (f: (context: C) => T | Promise<T>, jobs: number = 1) {
   function signal () {
-    let resolve = null
-    const promise = new Promise((resolve_) => {
+    let resolve: () => void = () => {}
+    const promise = new Promise<void>((resolve_) => {
       resolve = resolve_
     })
     return { promise, resolve }
   }
 
-  let q = []
+  let q: {
+    context: C
+    resolve: (result: T) => void
+    reject: (err: any) => void
+  }[] = []
   let drain_ = signal()
   let running = 0
 
@@ -21,10 +23,10 @@ module.exports = function qup (f, jobs = 1) {
     const { context, resolve, reject } = next
 
     running += 1
-    let result
+    let result: T
     try {
       result = await f(context)
-    } catch (e) {
+    } catch (e: any) {
       running -= 1
       return reject(e)
     }
@@ -38,9 +40,9 @@ module.exports = function qup (f, jobs = 1) {
     drain_.resolve()
   }
 
-  function push (context) {
+  function push (context: C) {
     drain_ = signal()
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       q.push({ context, resolve, reject })
       if (running < jobs) return run()
     })

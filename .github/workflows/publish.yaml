@@ -1,0 +1,44 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      npm_tag:
+        description: 'npm tag to publish to'
+        required: true
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish_snapshot:
+    name: Publish
+    runs-on: ubuntu-latest
+    environment: Release
+    steps:
+      - uses: actions/checkout@main
+        with:
+          persist-credentials: true # needed for git push
+
+      - uses: ./.github/composites/setup
+
+      - run: pnpm build
+
+      - run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: git tag
+        shell: bash
+        run: |
+          bash -c "<jq -r '.version | \'v\' + .version' | xargs -I '{}' git tag '{}'"
+
+      - name: npm publish
+        run: pnpm publish --access=public --tag ${{ inputs.npm_tag }} --recursive --report-summary
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: git push
+        run: git push origin --tags
