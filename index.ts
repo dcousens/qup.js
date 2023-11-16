@@ -7,7 +7,7 @@ export default function qup<C = void, T = void> (f: (context: C) => T | Promise<
     return { promise, resolve }
   }
 
-  let q: {
+  const q: {
     context: C
     resolve: (result: T) => void
     reject: (err: any) => void
