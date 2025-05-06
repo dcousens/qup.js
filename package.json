@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "test:types": "tsc -p tsconfig.json",
-    "test:unit": "node --test --import tsx tests/*.ts",
+    "test:unit": "node --test tests/*.ts",
     "test": "pnpm test:types && pnpm test:unit"
   },
   "exports": {
@@ -38,7 +38,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
-    "tsx": "^3.13.0",
     "typescript": "^5.2.2"
   }
 }

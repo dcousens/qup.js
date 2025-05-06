@@ -1,10 +1,14 @@
 export default function qup<C = void, T = void> (f: (context: C) => T | Promise<T>, jobs: number = 1) {
   function signal () {
     let resolve: () => void = () => {}
+    let resolved = false
     const promise = new Promise<void>((resolve_) => {
-      resolve = resolve_
+      resolve = () => {
+        resolve_()
+        resolved = true
+      }
     })
-    return { promise, resolve }
+    return { promise, resolve, resolved: () => resolved }
   }
 
   const q: {
@@ -41,7 +45,7 @@ export default function qup<C = void, T = void> (f: (context: C) => T | Promise<
   }
 
   function push (context: C) {
-    drain_ = signal()
+    if (drain_.resolved()) drain_ = signal()
     return new Promise<T>((resolve, reject) => {
       q.push({ context, resolve, reject })
       if (running < jobs) return run()

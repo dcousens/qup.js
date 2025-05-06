@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import t from 'node:assert'
-import qup from '../index.js'
+import qup from '../index.ts'
 
 const tests = []
 
@@ -79,6 +79,26 @@ test('drainable', async () => {
   t.equal(value, 0)
   await fset.drain()
   t.equal(value, 99)
+})
+
+test('draining waits for interim jobs too', async () => {
+  let value = 0
+  const fset = qup(async (x: number) => {
+    await sleep(1)
+    value = x
+
+    if (value === 0) return
+    if (value > 100) return
+    fset.push(value * 10)
+  }, 10)
+
+  for (let i = 0; i < 100; ++i) {
+    fset.push(i)
+  }
+
+  t.equal(value, 0)
+  await fset.drain()
+  t.equal(value, 1000)
 })
 
 test('drained to start', async () => {
