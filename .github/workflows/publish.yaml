@@ -26,8 +26,6 @@ jobs:
 
       - uses: ./.github/composites/setup
 
-      - run: pnpm build
-
       - name: npm publish
         run: |
           cp LICENSE dist/
