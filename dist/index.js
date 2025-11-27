@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = qup;
 function qup(f, jobs = 1) {
     function signal() {
         let resolve = () => { };
@@ -58,4 +59,3 @@ function qup(f, jobs = 1) {
         drain
     };
 }
-exports.default = qup;
