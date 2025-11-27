@@ -4,14 +4,12 @@
   "license": "MIT",
   "author": "Daniel Cousens",
   "description": "Async batched concurrent queue",
-  "type": "module",
   "keywords": [
     "async",
     "await",
     "batch",
-    "cargo",
     "concurrent",
-    "payload",
+    "drain",
     "queue",
     "typescript"
   ],
@@ -32,8 +30,7 @@
   },
   "exports": {
     ".": {
-      "require": "./export.js",
-      "import": "./index.js",
+      "default": "./export.js",
       "types": "./index.d.ts"
     }
   },

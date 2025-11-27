@@ -1,33 +1,30 @@
 {
-    "name": "qup",
-    "version": "3.1.5",
-    "license": "MIT",
-    "author": "Daniel Cousens",
-    "description": "Async batched concurrent queue",
-    "type": "module",
-    "keywords": [
-        "async",
-        "await",
-        "batch",
-        "cargo",
-        "concurrent",
-        "payload",
-        "queue",
-        "typescript"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/dcousens/qup.js.git"
-    },
-    "bugs": {
-        "url": "https://github.com/dcousens/qup.js/issues"
-    },
-    "homepage": "https://github.com/dcousens/qup.js",
-    "exports": {
-        ".": {
-            "require": "./export.js",
-            "import": "./index.js",
-            "types": "./index.d.ts"
-        }
+  "name": "qup",
+  "version": "3.1.5",
+  "license": "MIT",
+  "author": "Daniel Cousens",
+  "description": "Async batched concurrent queue",
+  "keywords": [
+    "async",
+    "await",
+    "batch",
+    "concurrent",
+    "drain",
+    "queue",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcousens/qup.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dcousens/qup.js/issues"
+  },
+  "homepage": "https://github.com/dcousens/qup.js",
+  "exports": {
+    ".": {
+      "default": "./export.js",
+      "types": "./index.d.ts"
     }
+  }
 }
